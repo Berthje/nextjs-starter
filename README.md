@@ -1,36 +1,102 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Next.js Starter Kit
 
-## Getting Started
+A modern, production-ready Next.js starter kit with authentication, database integration, and best practices built-in.
 
-First, run the development server:
+## ✨ What's Included
 
+- **Next.js 15.3** with App Router and TypeScript
+- **Authentication** with Better Auth (email/password)
+- **Database** PostgreSQL with raw SQL queries (no ORM)
+- **Styling** Tailwind CSS with custom components
+- **Code Quality** ESLint + Prettier configured
+- **Type Safety** Full TypeScript support
+
+## 🚀 Quick Start
+
+### 1. Clone and Install
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone <this-repo>
+cd nextjs-starter-kit
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Set Up Environment
+```bash
+cp .env.example .env.local
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Edit `.env.local` with your database credentials:
+```env
+DATABASE_URL="postgresql://username:password@localhost:5432/database_name"
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=my_app_db
+DB_USER=postgres
+DB_PASSWORD=your_password
+BETTER_AUTH_SECRET="your-secret-key-here"
+BETTER_AUTH_URL="http://localhost:3000"
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 3. Set Up Database
+Make sure PostgreSQL is running locally, then test the connection:
+```bash
+npm run db:setup
+```
 
-## Learn More
+### 4. Start Development
+```bash
+npm run dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+Visit `http://localhost:3000` 🎉
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📁 Project Structure
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+src/
+├── app/                # Next.js App Router
+│   ├── auth/           # Login/signup pages
+│   ├── dashboard/      # Protected pages
+│   └── api/auth/       # Auth API routes
+├── components/         # Reusable UI components
+│   ├── auth/           # Auth-specific components
+│   └── ui/             # General UI components
+└── lib/                # Utilities and configurations
+    ├── auth-client.ts  # Better Auth client setup
+    ├── auth.ts         # Better Auth server setup
+    ├── db.ts           # Database connection
+    └── utils.ts        # Helper functions
+```
 
-## Deploy on Vercel
+## 🛠️ Configuration
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Database Setup
+1. Install PostgreSQL locally or use a cloud service
+2. Create a database for your app
+3. Update `DATABASE_URL` in `.env.local`
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Authentication
+- Users can sign up/login with email and password
+- Better Auth automatically creates necessary database tables
+- Sessions are handled server-side
+
+### Styling
+- Tailwind CSS is pre-configured
+- Custom utility classes in `globals.css`
+
+## 🎯 Next Steps
+
+1. **Customize your app** - Update app name and styling
+2. **Add your features** - Build on top of the authentication foundation
+3. **Deploy** - Use Vercel, Netlify, or your preferred platform
+
+## 📖 Learn More
+
+- [Next.js Documentation](https://nextjs.org/docs)
+- [Better Auth Guide](https://www.better-auth.com/)
+- [Tailwind CSS](https://tailwindcss.com/docs)
+- [PostgreSQL Tutorial](https://www.postgresql.org/docs/)
+
+---
+
+**Happy coding!** 🚀
