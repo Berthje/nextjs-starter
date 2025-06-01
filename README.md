@@ -86,14 +86,13 @@ After setup, your app will be available at:
 ### 🔧 Setup & Environment
 ```bash
 npm run setup               # Interactive setup - choose project name
-npm run setup:silent        # Auto setup using folder name  
+npm run setup:silent        # Auto setup using folder name
 npm run setup:complete      # Complete setup + start containers + database migration
 ```
 
 ### 🐳 Docker Development
 ```bash
 npm run docker:dev              # Start dev environment (with auto-setup)
-npm run docker:dev:detached     # Start dev environment in background + init database
 npm run docker:dev:stop         # Stop development containers
 npm run docker:restart          # Restart just the Next.js app
 ```
@@ -357,7 +356,7 @@ docker exec -it [your-project-name]-db psql -U postgres -d [your-project-name]_d
 
 # Should show these tables:
 # - user (user accounts and profiles)
-# - session (authentication sessions)  
+# - session (authentication sessions)
 # - account (OAuth and credential accounts)
 # - verification (email verification, password resets)
 ```

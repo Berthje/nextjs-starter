@@ -11,8 +11,7 @@
     "lint:fix": "next lint --fix",
     "setup": "node scripts/setup-env.js",
     "setup:silent": "node scripts/setup-env-silent.js",
-    "docker:dev": "node scripts/check-env.js && docker-compose --env-file .env up --build",
-    "docker:dev:detached": "node scripts/check-env.js && docker-compose --env-file .env up --build -d && npm run db:init",
+    "docker:dev": "node scripts/check-env.js && docker-compose --env-file .env up --build -d && npm run db:init",
     "docker:dev:stop": "docker-compose down",
     "docker:dev:silent": "npm run setup:silent && docker-compose --env-file .env up --build -d && npm run db:init",
     "docker:prod": "node scripts/check-env.js && docker-compose --env-file .env.prod -f docker-compose.prod.yml up --build -d",
@@ -23,7 +22,7 @@
     "db:migrate": "npx @better-auth/cli migrate",
     "db:generate": "npx @better-auth/cli generate",
     "db:init": "node scripts/init-database.js",
-    "setup:complete": "npm run setup && npm run docker:dev:detached"
+    "setup:complete": "npm run setup && npm run docker:dev"
   },
   "dependencies": {
     "@types/react-syntax-highlighter": "^15.5.13",
