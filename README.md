@@ -193,10 +193,6 @@ nano .env
 # Update these values:
 PROJECT_NAME=my-custom-name
 NEXT_PUBLIC_APP_NAME="My Custom App Name"
-DB_NAME=my-custom-name_db
-
-# Update DATABASE_URL to match new DB_NAME
-DATABASE_URL="postgresql://postgres:your_password@postgres:5432/my-custom-name_db"
 
 # Restart containers
 npm run docker:dev:stop

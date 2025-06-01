@@ -22,13 +22,17 @@
     "docker:clean": "docker-compose down -v --rmi all --remove-orphans"
   },
   "dependencies": {
+    "@types/react-syntax-highlighter": "^15.5.13",
     "better-auth": "^1.2.8",
     "clsx": "^2.1.1",
     "dotenv": "^16.5.0",
+    "marked": "^15.0.12",
     "next": "15.3.3",
     "pg": "^8.16.0",
+    "prismjs": "^1.30.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-syntax-highlighter": "^15.6.1",
     "tailwind-merge": "^3.3.0"
   },
   "devDependencies": {

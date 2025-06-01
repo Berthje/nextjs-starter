@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 
 export default function Home() {
   const [isDark, setIsDark] = useState(true);
@@ -228,11 +229,12 @@ export default function Home() {
             >
               Get Started Now
             </button>
-            <button
-              className={`px-8 py-4 ${isDark ? "bg-gray-800 text-white border-gray-700" : "bg-white text-gray-900 border-gray-300"} border font-semibold rounded-xl hover:shadow-lg transition-all duration-300`}
+            <Link
+              href="/documentation"
+              className={`px-8 py-4 ${isDark ? "bg-gray-800 text-white border-gray-700" : "bg-white text-gray-900 border-gray-300"} border font-semibold rounded-xl hover:shadow-lg transition-all duration-300 inline-block text-center`}
             >
               View Documentation
-            </button>
+            </Link>
           </div>
 
           {/* Quick Setup Command */}
