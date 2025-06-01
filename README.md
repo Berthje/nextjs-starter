@@ -44,7 +44,7 @@ A modern, battle-tested Next.js starter kit that gets you from idea to productio
 #### Option 1: Auto Setup (Recommended)
 ```bash
 # Clone with your project name
-git clone https://github.com/yourusername/nextjs-starter-kit.git my-awesome-project
+git clone https://github.com/berthje/nextjs-starter-kit.git my-awesome-project
 cd my-awesome-project
 
 # Start development (auto-setups everything)
@@ -55,7 +55,7 @@ npm run docker:dev
 #### Option 2: Interactive Setup
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/nextjs-starter-kit.git my-project
+git clone https://github.com/berthje/nextjs-starter-kit.git my-project
 cd my-project
 
 # Interactive setup (choose your project name)
@@ -68,7 +68,7 @@ npm run docker:dev
 #### Option 3: Default Setup
 ```bash
 # Clone without renaming
-git clone https://github.com/yourusername/nextjs-starter-kit.git
+git clone https://github.com/berthje/nextjs-starter-kit.git
 cd nextjs-starter-kit
 
 # Uses default "My Next.js App" name
