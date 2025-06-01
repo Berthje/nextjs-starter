@@ -97,13 +97,61 @@ async function setupEnvironment() {
 
   const userInput = await askQuestion(question);
   const projectName = userInput || suggestedName || "My Next.js App";
+  console.log(""); // Ask about Better Auth configuration
+  console.log("🔐 Better Auth Configuration");
+  console.log(
+    "Press Enter to leave empty, or enter your existing credentials:",
+  );
+
+  const betterAuthSecret =
+    (await askQuestion("Better Auth Secret (press Enter to leave empty): ")) ||
+    "your-secret-key-here-make-it-long-and-random";
+  const betterAuthUrl =
+    (await askQuestion(
+      "Better Auth URL (press Enter for http://localhost:3000): ",
+    )) || "http://localhost:3000";
+
+  if (betterAuthSecret === "your-secret-key-here-make-it-long-and-random") {
+    console.log("⚠️  Remember to add your Better Auth secret to .env later");
+  }
+
+  console.log("");
+  // Ask about Stripe integration
+  console.log("💳 Stripe Integration (Optional)");
+  console.log("Press Enter to skip, or enter your Stripe keys:");
+
+  const stripePublishableKey = await askQuestion(
+    "Stripe Publishable Key (press Enter to skip): ",
+  );
+
+  let stripeConfig = "";
+
+  if (stripePublishableKey) {
+    const stripeSecretKey = await askQuestion("Stripe Secret Key: ");
+    const stripeWebhookSecret = await askQuestion(
+      "Stripe Webhook Secret (press Enter to skip): ",
+    );
+
+    stripeConfig = `
+# Stripe Configuration
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="${stripePublishableKey}"
+STRIPE_SECRET_KEY="${stripeSecretKey}"`;
+
+    if (stripeWebhookSecret) {
+      stripeConfig += `
+STRIPE_WEBHOOK_SECRET="${stripeWebhookSecret}"`;
+    }
+
+    console.log("✅ Stripe integration configured");
+  } else {
+    console.log("⏭️ Skipping Stripe integration");
+  }
 
   console.log("");
   console.log("🔧 Generating secure credentials...");
 
   // Generate secure values
   const randomPassword = crypto.randomBytes(16).toString("hex");
-  const randomSecret = crypto.randomBytes(32).toString("hex");
 
   // Process project names
   const kebabProjectName = generateProjectName(projectName);
@@ -122,13 +170,18 @@ async function setupEnvironment() {
     /NEXT_PUBLIC_APP_NAME=.*/,
     `NEXT_PUBLIC_APP_NAME="${displayProjectName}"`,
   );
-
   // Replace database configuration
   envContent = envContent.replace(/your_password/g, `dev_${randomPassword}`);
 
+  // Replace Better Auth configuration
   envContent = envContent.replace(
     /your-secret-key-here-make-it-long-and-random/g,
-    randomSecret,
+    betterAuthSecret,
+  );
+
+  envContent = envContent.replace(
+    /BETTER_AUTH_URL=.*/,
+    `BETTER_AUTH_URL="${betterAuthUrl}"`,
   );
 
   // Update DATABASE_URL
@@ -143,9 +196,13 @@ async function setupEnvironment() {
     `DB_NAME=${kebabProjectName}_db`,
   );
 
+  // Add Stripe configuration if requested
+  if (stripeConfig) {
+    envContent += stripeConfig;
+  }
+
   // Write .env file
   fs.writeFileSync(".env", envContent);
-
   console.log("");
   console.log("✅ Environment setup complete!");
   console.log("");
@@ -154,8 +211,22 @@ async function setupEnvironment() {
   console.log(`   🐳 Container Prefix: ${kebabProjectName}`);
   console.log(`   🗄️  Database: ${kebabProjectName}_db`);
   console.log(`   🔑 Password: dev_${randomPassword}`);
-  console.log(`   🔐 Auth Secret: ${randomSecret.substring(0, 16)}...`);
+  console.log(
+    `   🔐 Auth Secret: ${betterAuthSecret === "your-secret-key-here-make-it-long-and-random" ? "⚠️  TO BE CONFIGURED" : betterAuthSecret.substring(0, 16) + "..."}`,
+  );
+  console.log(`   🌐 Auth URL: ${betterAuthUrl}`);
+  if (stripeConfig) {
+    console.log(`   💳 Stripe: ✅ Configured`);
+  } else {
+    console.log(`   💳 Stripe: ❌ Not added`);
+  }
   console.log("");
+  if (
+    betterAuthSecret === "your-secret-key-here-make-it-long-and-random" ||
+    stripeConfig.includes("your_")
+  ) {
+    console.log("⚠️  Don't forget to update placeholder values in .env!");
+  }
   console.log("📝 You can edit .env to customize any settings");
   console.log("🚀 Ready for development!");
   console.log("");

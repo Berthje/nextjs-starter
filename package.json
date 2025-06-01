@@ -12,14 +12,18 @@
     "setup": "node scripts/setup-env.js",
     "setup:silent": "node scripts/setup-env-silent.js",
     "docker:dev": "node scripts/check-env.js && docker-compose --env-file .env up --build",
-    "docker:dev:detached": "node scripts/check-env.js && docker-compose --env-file .env up --build -d",
+    "docker:dev:detached": "node scripts/check-env.js && docker-compose --env-file .env up --build -d && npm run db:init",
     "docker:dev:stop": "docker-compose down",
-    "docker:dev:silent": "npm run setup:silent && docker-compose --env-file .env up --build",
+    "docker:dev:silent": "npm run setup:silent && docker-compose --env-file .env up --build -d && npm run db:init",
     "docker:prod": "node scripts/check-env.js && docker-compose --env-file .env.prod -f docker-compose.prod.yml up --build -d",
     "docker:prod:stop": "docker-compose -f docker-compose.prod.yml down",
     "docker:logs": "docker-compose logs -f",
     "docker:restart": "docker-compose restart app",
-    "docker:clean": "docker-compose down -v --rmi all --remove-orphans"
+    "docker:clean": "docker-compose down -v --rmi all --remove-orphans",
+    "db:migrate": "npx @better-auth/cli migrate",
+    "db:generate": "npx @better-auth/cli generate",
+    "db:init": "node scripts/init-database.js",
+    "setup:complete": "npm run setup && npm run docker:dev:detached"
   },
   "dependencies": {
     "@types/react-syntax-highlighter": "^15.5.13",
@@ -36,6 +40,7 @@
     "tailwind-merge": "^3.3.0"
   },
   "devDependencies": {
+    "@better-auth/cli": "1.2.8",
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",

@@ -51,11 +51,8 @@ function setupEnvironmentSilent() {
     if (!fs.existsSync(".env.example")) {
       console.error("❌ .env.example not found");
       process.exit(1);
-    }
-
-    // Generate secure values
+    } // Generate secure values
     const randomPassword = crypto.randomBytes(16).toString("hex");
-    const randomSecret = crypto.randomBytes(32).toString("hex");
 
     // Process project names
     const kebabProjectName = generateProjectName(projectName);
@@ -78,10 +75,11 @@ function setupEnvironmentSilent() {
     // Replace database configuration
     envContent = envContent.replace(/your_password/g, `dev_${randomPassword}`);
 
-    envContent = envContent.replace(
-      /your-secret-key-here-make-it-long-and-random/g,
-      randomSecret,
-    );
+    // Leave Better Auth secret as placeholder (don't auto-generate)
+    // envContent = envContent.replace(
+    //   /your-secret-key-here-make-it-long-and-random/g,
+    //   randomSecret,
+    // );
 
     // Update DATABASE_URL
     envContent = envContent.replace(
@@ -97,10 +95,10 @@ function setupEnvironmentSilent() {
 
     // Write .env file
     fs.writeFileSync(".env", envContent);
-
     console.log("✅ Environment auto-configured!");
     console.log(`📱 Project: ${displayProjectName}`);
     console.log(`🗄️  Database: ${kebabProjectName}_db`);
+    console.log("⚠️  Remember to add your Better Auth secret to .env");
   } catch (error) {
     console.error("❌ Failed to setup environment:", error.message);
     process.exit(1);

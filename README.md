@@ -86,15 +86,23 @@ After setup, your app will be available at:
 ### 🔧 Setup & Environment
 ```bash
 npm run setup               # Interactive setup - choose project name
-npm run setup:silent        # Auto setup using folder name
+npm run setup:silent        # Auto setup using folder name  
+npm run setup:complete      # Complete setup + start containers + database migration
 ```
 
 ### 🐳 Docker Development
 ```bash
 npm run docker:dev              # Start dev environment (with auto-setup)
-npm run docker:dev:detached     # Start dev environment in background
+npm run docker:dev:detached     # Start dev environment in background + init database
 npm run docker:dev:stop         # Stop development containers
 npm run docker:restart          # Restart just the Next.js app
+```
+
+### 🗄️ Database Management
+```bash
+npm run db:init             # Initialize Better Auth database tables
+npm run db:migrate          # Run Better Auth database migration
+npm run db:generate         # Generate Better Auth schema files
 ```
 
 ### 🚀 Docker Production
@@ -330,8 +338,28 @@ docker exec -it my-awesome-project-db psql -U postgres -d my-awesome-project_db
 # Run a test query
 SELECT version();
 
+# Check Better Auth tables were created
+\dt
+
+# Should show tables: user, session, account, verification
+
 # Exit
 \q
+```
+
+### 🔐 Better Auth Database Verification
+```bash
+# Check if Better Auth tables exist
+npm run db:migrate
+
+# Connect to database and verify tables
+docker exec -it [your-project-name]-db psql -U postgres -d [your-project-name]_db -c "\dt"
+
+# Should show these tables:
+# - user (user accounts and profiles)
+# - session (authentication sessions)  
+# - account (OAuth and credential accounts)
+# - verification (email verification, password resets)
 ```
 
 ### 📊 Container Status Check
@@ -582,12 +610,18 @@ npm run docker:dev
 ```bash
 # 🚀 Getting Started
 npm run setup               # Interactive setup with project naming
+npm run setup:complete      # Complete setup + containers + database
 npm run docker:dev          # Start development (auto-setup)
 
 # 🔧 Development
 npm run docker:dev:stop     # Stop containers
 npm run docker:restart      # Restart app
 npm run docker:logs         # View logs
+
+# 🗄️ Database
+npm run db:init             # Initialize auth database
+npm run db:migrate          # Run Better Auth migration
+npm run db:generate         # Generate schema files
 
 # 🚀 Production
 npm run docker:prod         # Start production
