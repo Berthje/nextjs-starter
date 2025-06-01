@@ -134,7 +134,7 @@ async function setupEnvironment() {
 
     stripeConfig = `
 # Stripe Configuration
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="${stripePublishableKey}"
+STRIPE_PUBLIC_KEY="${stripePublishableKey}"
 STRIPE_SECRET_KEY="${stripeSecretKey}"`;
 
     if (stripeWebhookSecret) {

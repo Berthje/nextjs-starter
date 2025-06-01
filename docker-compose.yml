@@ -15,7 +15,6 @@ services:
       - ./docker/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - app-network
-
   # Next.js Application (Development)
   app:
     build:
@@ -38,6 +37,9 @@ services:
       - NEXT_PUBLIC_APP_NAME=${NEXT_PUBLIC_APP_NAME}
       - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL}
       - PROJECT_NAME=${PROJECT_NAME}
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
+      - STRIPE_PUBLIC_KEY=${STRIPE_PUBLIC_KEY}
+      - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
     volumes:
       - .:/app
       - /app/node_modules
