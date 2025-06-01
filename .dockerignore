@@ -1,0 +1,39 @@
+\user\Documents\Coding\StarterKits\nextjs-starter\.dockerignore
+# Dependencies
+node_modules
+npm-debug.log*
+
+# Next.js
+.next
+out
+
+# Production
+build
+
+# Environment variables
+.env*
+!.env.example
+
+# Git
+.git
+.gitignore
+
+# README and docs
+README.md
+*.md
+
+# Docker
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# IDE
+.vscode
+.idea
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

@@ -1,0 +1,52 @@
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:17.5
+    container_name: nextjs-starter-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: my_app_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: your_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - app-network
+
+  # Next.js Application (Development)
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: nextjs-starter-app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://postgres:your_password@postgres:5432/my_app_db
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=my_app_db
+      - DB_USER=postgres
+      - DB_PASSWORD=your_password
+      - BETTER_AUTH_SECRET=your-secret-key-here-make-it-long-and-random
+      - BETTER_AUTH_URL=http://localhost:3000
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.next
+    depends_on:
+      - postgres
+    networks:
+      - app-network
+
+volumes:
+  postgres_data:
+
+networks:
+  app-network:
+    driver: bridge
