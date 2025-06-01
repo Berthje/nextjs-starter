@@ -1,118 +1,194 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
-const fs = require("fs");
-const crypto = require("crypto");
-const path = require("path");
+const fs = require('fs');
+const crypto = require('crypto');
+const path = require('path');
+const readline = require('readline');
 
-console.log("🔍 Checking environment setup...");
+// Create readline interface for user input
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
 
-// Check if .env exists
-if (!fs.existsSync(".env")) {
-  console.log("⚠️  No .env file found. Creating one automatically...");
-
-  // Auto-generate project name from folder name
-  const folderName = path.basename(process.cwd());
-  const projectName =
-    folderName === "nextjs-starter" ? "My Next.js App" : folderName;
-
-  setupEnvironmentAuto(projectName);
-} else {
-  console.log("✅ Environment file found");
-
-  // Check for placeholder values
-  const envContent = fs.readFileSync(".env", "utf8");
-  const hasPlaceholders =
-    envContent.includes("your_password") ||
-    envContent.includes("your-secret-key-here-make-it-long-and-random");
-
-  if (hasPlaceholders) {
-    console.log("⚠️  Found placeholder values in .env. Regenerating...");
-    const folderName = path.basename(process.cwd());
-    const projectName =
-      folderName === "nextjs-starter" ? "My Next.js App" : folderName;
-    setupEnvironmentAuto(projectName);
-  }
+function askQuestion(question) {
+  return new Promise((resolve) => {
+    rl.question(question, (answer) => {
+      resolve(answer.trim());
+    });
+  });
 }
 
 function generateProjectName(customName) {
-  return customName
-    .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, "")
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-")
-    .replace(/^-|-$/g, "");
+  if (customName) {
+    return customName
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '');
+  }
+  return 'my-nextjs-app';
 }
 
 function generateAppDisplayName(customName) {
-  return customName
-    .replace(/[^a-zA-Z0-9\s]/g, " ")
-    .replace(/\s+/g, " ")
-    .trim()
-    .split(" ")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-    .join(" ");
+  if (customName) {
+    return customName
+      .replace(/[^a-zA-Z0-9\s]/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
+  }
+  return 'My Next.js App';
 }
 
-function setupEnvironmentAuto(projectName) {
-  try {
-    // Read .env.example
-    if (!fs.existsSync(".env.example")) {
-      console.error("❌ .env.example not found");
-      process.exit(1);
+async function checkAndSetupEnvironment() {
+  console.log('🔍 Checking environment setup...');
+
+  // Check if .env exists and has valid configuration
+  let needsSetup = false;
+  let hasValidConfig = false;
+
+  if (fs.existsSync('.env')) {
+    const envContent = fs.readFileSync('.env', 'utf8');
+
+    // Check for placeholder values
+    const hasPlaceholders =
+      envContent.includes('your_password') ||
+      envContent.includes('your-secret-key-here-make-it-long-and-random') ||
+      envContent.includes('my-nextjs-app');
+
+    if (hasPlaceholders) {
+      needsSetup = true;
+      console.log('⚠️  Found .env with placeholder values');
+    } else {
+      hasValidConfig = true;
+      console.log('✅ Found existing .env with custom configuration');
     }
+  } else {
+    needsSetup = true;
+    console.log('⚠️  No .env file found');
+  }
 
-    // Generate secure values
-    const randomPassword = crypto.randomBytes(16).toString("hex");
-    const randomSecret = crypto.randomBytes(32).toString("hex");
+  // If we have valid config, ask if user wants to reconfigure
+  if (hasValidConfig) {
+    console.log('');
+    const shouldReconfigure = await askQuestion('🔧 Reconfigure project settings? (y/N): ');
+    if (shouldReconfigure.toLowerCase() !== 'y' && shouldReconfigure.toLowerCase() !== 'yes') {
+      console.log('✅ Using existing configuration');
+      console.log('🚀 Starting Docker containers...');
+      rl.close();
+      return;
+    }
+    needsSetup = true;
+  }
 
-    // Process project names
-    const kebabProjectName = generateProjectName(projectName);
-    const displayProjectName = generateAppDisplayName(projectName);
+  if (needsSetup) {
+    await setupEnvironmentInteractive();
+  }
 
-    // Read and update .env content
-    let envContent = fs.readFileSync(".env.example", "utf8");
+  rl.close();
+}
 
-    // Replace project configuration
-    envContent = envContent.replace(
-      /PROJECT_NAME=.*/,
-      `PROJECT_NAME=${kebabProjectName}`,
-    );
+async function setupEnvironmentInteractive() {
+  console.log('');
+  console.log('🚀 Welcome to Next.js Starter Kit Setup!');
+  console.log('');
 
-    envContent = envContent.replace(
-      /NEXT_PUBLIC_APP_NAME=.*/,
-      `NEXT_PUBLIC_APP_NAME="${displayProjectName}"`,
-    );
-
-    // Replace database configuration
-    envContent = envContent.replace(/your_password/g, `dev_${randomPassword}`);
-
-    envContent = envContent.replace(
-      /your-secret-key-here-make-it-long-and-random/g,
-      randomSecret,
-    );
-
-    // Update DATABASE_URL with project-specific database name
-    envContent = envContent.replace(
-      "postgresql://postgres:your_password@postgres:5432/my_app_db",
-      `postgresql://postgres:dev_${randomPassword}@postgres:5432/${kebabProjectName}_db`,
-    );
-
-    // Update database name
-    envContent = envContent.replace(
-      /DB_NAME=.*/,
-      `DB_NAME=${kebabProjectName}_db`,
-    );
-
-    // Write .env file
-    fs.writeFileSync(".env", envContent);
-
-    console.log("✅ Environment setup complete!");
-    console.log(`📱 Project: ${displayProjectName}`);
-    console.log(`🗄️  Database: ${kebabProjectName}_db`);
-    console.log("🚀 Starting Docker containers...");
-  } catch (error) {
-    console.error("❌ Failed to setup environment:", error.message);
+  // Read .env.example
+  if (!fs.existsSync('.env.example')) {
+    console.error('❌ .env.example not found');
     process.exit(1);
   }
+
+  // Get project name suggestion from folder
+  const folderName = path.basename(process.cwd());
+  const suggestedName = folderName === 'nextjs-starter' || folderName === 'nextjs-starter-kit'
+    ? ''
+    : folderName.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+
+  // Ask for project name
+  console.log('📝 Let\'s configure your project:');
+  console.log('');
+
+  let question = 'Enter your project name';
+  if (suggestedName) {
+    question += ` (or press Enter for "${suggestedName}")`;
+  }
+  question += ': ';
+
+  const userInput = await askQuestion(question);
+  const projectName = userInput || suggestedName || 'My Next.js App';
+
+  console.log('');
+  console.log('🔧 Generating secure credentials...');
+
+  // Generate secure values
+  const randomPassword = crypto.randomBytes(16).toString('hex');
+  const randomSecret = crypto.randomBytes(32).toString('hex');
+
+  // Process project names
+  const kebabProjectName = generateProjectName(projectName);
+  const displayProjectName = generateAppDisplayName(projectName);
+
+  // Read and update .env content
+  let envContent = fs.readFileSync('.env.example', 'utf8');
+
+  // Replace project configuration
+  envContent = envContent.replace(
+    /PROJECT_NAME=.*/,
+    `PROJECT_NAME=${kebabProjectName}`
+  );
+
+  envContent = envContent.replace(
+    /NEXT_PUBLIC_APP_NAME=.*/,
+    `NEXT_PUBLIC_APP_NAME="${displayProjectName}"`
+  );
+
+  // Replace database configuration
+  envContent = envContent.replace(
+    /your_password/g,
+    `dev_${randomPassword}`
+  );
+
+  envContent = envContent.replace(
+    /your-secret-key-here-make-it-long-and-random/g,
+    randomSecret
+  );
+
+  // Update DATABASE_URL with project-specific database name
+  envContent = envContent.replace(
+    'postgresql://postgres:your_password@postgres:5432/my_app_db',
+    `postgresql://postgres:dev_${randomPassword}@postgres:5432/${kebabProjectName}_db`
+  );
+
+  // Update database name
+  envContent = envContent.replace(
+    /DB_NAME=.*/,
+    `DB_NAME=${kebabProjectName}_db`
+  );
+
+  // Write .env file
+  fs.writeFileSync('.env', envContent);
+
+  console.log('');
+  console.log('✅ Environment setup complete!');
+  console.log('');
+  console.log('📋 Configuration Summary:');
+  console.log(`   📱 Project Name: ${displayProjectName}`);
+  console.log(`   🐳 Container Prefix: ${kebabProjectName}`);
+  console.log(`   🗄️  Database: ${kebabProjectName}_db`);
+  console.log(`   🔑 Password: dev_${randomPassword}`);
+  console.log(`   🔐 Auth Secret: ${randomSecret.substring(0, 16)}...`);
+  console.log('');
+  console.log('🚀 Starting Docker containers...');
+  console.log('');
 }
 
-console.log("✅ Environment validation complete");
+// Run the check and setup
+checkAndSetupEnvironment().catch((error) => {
+  console.error('❌ Setup failed:', error.message);
+  rl.close();
+  process.exit(1);
+});

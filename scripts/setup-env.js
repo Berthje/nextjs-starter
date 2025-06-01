@@ -2,6 +2,7 @@
 const fs = require("fs");
 const crypto = require("crypto");
 const readline = require("readline");
+const path = require("path");
 
 // Create readline interface for user input
 const rl = readline.createInterface({
@@ -19,7 +20,6 @@ function askQuestion(question) {
 
 function generateProjectName(customName) {
   if (customName) {
-    // Convert to kebab-case and remove invalid characters
     return customName
       .toLowerCase()
       .replace(/[^a-z0-9\s-]/g, "")
@@ -32,7 +32,6 @@ function generateProjectName(customName) {
 
 function generateAppDisplayName(customName) {
   if (customName) {
-    // Convert to Title Case
     return customName
       .replace(/[^a-zA-Z0-9\s]/g, " ")
       .replace(/\s+/g, " ")
@@ -52,7 +51,6 @@ async function setupEnvironment() {
   if (fs.existsSync(".env")) {
     const envContent = fs.readFileSync(".env", "utf8");
 
-    // Check if it has placeholder values
     const hasPlaceholders =
       envContent.includes("your_password") ||
       envContent.includes("your-secret-key-here-make-it-long-and-random") ||
@@ -80,13 +78,25 @@ async function setupEnvironment() {
     process.exit(1);
   }
 
+  // Get project name suggestion from folder
+  const folderName = path.basename(process.cwd());
+  const suggestedName =
+    folderName === "nextjs-starter" || folderName === "nextjs-starter-kit"
+      ? ""
+      : folderName.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
+
   // Get project name from user
   console.log("📝 Let's configure your project:");
   console.log("");
 
-  const projectName = await askQuestion(
-    'Enter your project name (or press Enter for "My Next.js App"): ',
-  );
+  let question = "Enter your project name";
+  if (suggestedName) {
+    question += ` (or press Enter for "${suggestedName}")`;
+  }
+  question += ": ";
+
+  const userInput = await askQuestion(question);
+  const projectName = userInput || suggestedName || "My Next.js App";
 
   console.log("");
   console.log("🔧 Generating secure credentials...");
@@ -121,13 +131,13 @@ async function setupEnvironment() {
     randomSecret,
   );
 
-  // Update DATABASE_URL with the same password
+  // Update DATABASE_URL
   envContent = envContent.replace(
     "postgresql://postgres:your_password@postgres:5432/my_app_db",
     `postgresql://postgres:dev_${randomPassword}@postgres:5432/${kebabProjectName}_db`,
   );
 
-  // Update database name to match project
+  // Update database name
   envContent = envContent.replace(
     /DB_NAME=.*/,
     `DB_NAME=${kebabProjectName}_db`,
@@ -140,13 +150,14 @@ async function setupEnvironment() {
   console.log("✅ Environment setup complete!");
   console.log("");
   console.log("📋 Configuration Summary:");
-  console.log(`   Project Name: ${displayProjectName}`);
-  console.log(`   Database: ${kebabProjectName}_db`);
-  console.log(`   Password: dev_${randomPassword}`);
-  console.log(`   Auth Secret: ${randomSecret.substring(0, 16)}...`);
+  console.log(`   📱 Project Name: ${displayProjectName}`);
+  console.log(`   🐳 Container Prefix: ${kebabProjectName}`);
+  console.log(`   🗄️  Database: ${kebabProjectName}_db`);
+  console.log(`   🔑 Password: dev_${randomPassword}`);
+  console.log(`   🔐 Auth Secret: ${randomSecret.substring(0, 16)}...`);
   console.log("");
   console.log("📝 You can edit .env to customize any settings");
-  console.log('🚀 Run "npm run docker:dev" to start development');
+  console.log("🚀 Ready for development!");
   console.log("");
 
   rl.close();

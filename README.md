@@ -41,38 +41,28 @@ A modern, battle-tested Next.js starter kit that gets you from idea to productio
 
 ### 🚀 Quick Installation Options
 
-#### Option 1: Auto Setup (Recommended)
+### 🚀 One-Command Setup (Interactive)
+
 ```bash
-# Clone with your project name
-git clone https://github.com/berthje/nextjs-starter-kit.git my-awesome-project
+# Clone with your desired project name
+git clone https://github.com/yourusername/nextjs-starter-kit.git my-awesome-project
 cd my-awesome-project
 
-# Start development (auto-setups everything)
-npm run docker:dev
-```
-**Automatically uses "My Awesome Project" as your app name!**
-
-#### Option 2: Interactive Setup
-```bash
-# Clone the repository
-git clone https://github.com/berthje/nextjs-starter-kit.git my-project
-cd my-project
-
-# Interactive setup (choose your project name)
-npm run setup
-
-# Start development
+# Start development (will ask for project name)
 npm run docker:dev
 ```
 
-#### Option 3: Default Setup
-```bash
-# Clone without renaming
-git clone https://github.com/berthje/nextjs-starter-kit.git
-cd nextjs-starter-kit
+**What happens:**
+1. Checks if environment is configured
+2. **Asks for your project name** (suggests "My Awesome Project" from folder name)
+3. Generates secure credentials
+4. Starts Docker containers
+5. Opens http://localhost:3000
 
-# Uses default "My Next.js App" name
-npm run docker:dev
+### ⚡ Silent Mode (for CI/Automation)
+```bash
+npm run docker:dev:silent
+# Uses folder name automatically, no questions
 ```
 
 ### 📋 What the Setup Does Automatically
@@ -96,7 +86,7 @@ After setup, your app will be available at:
 ### 🔧 Setup & Environment
 ```bash
 npm run setup               # Interactive setup - choose project name
-npm run setup:auto          # Auto setup using folder name
+npm run setup:silent        # Auto setup using folder name
 ```
 
 ### 🐳 Docker Development
@@ -153,7 +143,6 @@ my-awesome-project/
 │   │   └── lib/                      # Utilities & configurations
 │   │
 │   ├── package.json                  # Dependencies & scripts
-│   ├── tailwind.config.ts            # Tailwind CSS configuration
 │   ├── next.config.ts                # Next.js configuration
 │   └── tsconfig.json                 # TypeScript configuration
 │
@@ -168,7 +157,7 @@ my-awesome-project/
 │
 └── 📋 Development Files
     ├── .eslintrc.json                # ESLint configuration
-    └── prettier.config.js            # Prettier configuration
+    └── .prettierrc            # Prettier configuration
 ```
 
 ---
