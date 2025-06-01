@@ -4,7 +4,7 @@
   "description": "A complete Next.js starter kit with PostgreSQL, Better Auth, and Docker support",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
