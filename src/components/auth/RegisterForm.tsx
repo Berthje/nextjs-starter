@@ -1,39 +1,50 @@
 "use client";
 
 import { authClient } from "@/lib/auth-client";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Link from "next/link";
 
-interface LoginFormProps {
+interface RegisterFormProps {
   redirectTo?: string;
 }
 
-export default function LoginForm({
+export default function RegisterForm({
   redirectTo = "/dashboard",
-}: LoginFormProps) {
+}: RegisterFormProps) {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
-  const router = useRouter();
+  const [success, setSuccess] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setSuccess("");
 
-    if (!email || !password) {
+    if (!name || !email || !password || !confirmPassword) {
       setError("Please fill in all fields");
       return;
     }
 
-    await authClient.signIn.email(
+    if (password !== confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
+    if (password.length < 8) {
+      setError("Password must be at least 8 characters long");
+      return;
+    }
+
+    await authClient.signUp.email(
       {
+        name,
         email,
         password,
         callbackURL: redirectTo,
-        rememberMe,
       },
       {
         onRequest: () => {
@@ -41,11 +52,15 @@ export default function LoginForm({
         },
         onSuccess: () => {
           setIsLoading(false);
-          router.push(redirectTo);
+          setSuccess(
+            "Account created successfully! Please check your email to verify your account.",
+          );
         },
         onError: (ctx) => {
           setIsLoading(false);
-          setError(ctx.error.message || "An error occurred during sign in");
+          setError(
+            ctx.error.message || "An error occurred during registration",
+          );
         },
       },
     );
@@ -56,10 +71,10 @@ export default function LoginForm({
       <div className="bg-white dark:bg-gray-800 shadow-2xl rounded-2xl p-8 space-y-6">
         <div className="text-center">
           <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
-            Welcome back
+            Create account
           </h2>
           <p className="mt-2 text-gray-600 dark:text-gray-400">
-            Sign in to your account
+            Sign up to get started
           </p>
         </div>
 
@@ -70,7 +85,32 @@ export default function LoginForm({
             </div>
           )}
 
+          {success && (
+            <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 px-4 py-3 rounded-lg text-sm">
+              {success}
+            </div>
+          )}
+
           <div className="space-y-4">
+            <div>
+              <label
+                htmlFor="name"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+              >
+                Full name
+              </label>
+              <input
+                id="name"
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-colors"
+                placeholder="Enter your full name"
+                disabled={isLoading}
+              />
+            </div>
+
             <div>
               <label
                 htmlFor="email"
@@ -106,34 +146,32 @@ export default function LoginForm({
                 className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-colors"
                 placeholder="Enter your password"
                 disabled={isLoading}
+                minLength={8}
               />
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                Must be at least 8 characters long
+              </p>
             </div>
-          </div>
 
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <input
-                id="remember-me"
-                type="checkbox"
-                checked={rememberMe}
-                onChange={(e) => setRememberMe(e.target.checked)}
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                disabled={isLoading}
-              />
+            <div>
               <label
-                htmlFor="remember-me"
-                className="ml-2 block text-sm text-gray-700 dark:text-gray-300"
+                htmlFor="confirmPassword"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
               >
-                Remember me
+                Confirm password
               </label>
+              <input
+                id="confirmPassword"
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-colors"
+                placeholder="Confirm your password"
+                disabled={isLoading}
+                minLength={8}
+              />
             </div>
-
-            <Link
-              href="/auth/forgot-password"
-              className="text-sm text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
-            >
-              Forgot password?
-            </Link>
           </div>
 
           <button
@@ -163,22 +201,22 @@ export default function LoginForm({
                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                   ></path>
                 </svg>
-                Signing in...
+                Creating account...
               </div>
             ) : (
-              "Sign in"
+              "Create account"
             )}
           </button>
         </form>
 
         <div className="text-center">
           <p className="text-sm text-gray-600 dark:text-gray-400">
-            Don&apos;t have an account?{" "}
+            Already have an account?{" "}
             <Link
-              href="/auth/register"
+              href="/auth/login"
               className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
             >
-              Sign up
+              Sign in
             </Link>
           </p>
         </div>
