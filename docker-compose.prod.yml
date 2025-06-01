@@ -2,7 +2,7 @@ services:
   # PostgreSQL Database
   postgres:
     image: postgres:17.5
-    container_name: nextjs-starter-db-prod
+    container_name: ${PROJECT_NAME}-prod
     restart: unless-stopped
     environment:
       POSTGRES_DB: ${DB_NAME}
@@ -21,7 +21,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: nextjs-starter-app-prod
+    container_name: ${PROJECT_NAME}-prod
     restart: unless-stopped
     ports:
       - "3000:3000"
