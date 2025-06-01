@@ -45,7 +45,7 @@ A modern, battle-tested Next.js starter kit that gets you from idea to productio
 
 ```bash
 # Clone with your desired project name
-git clone https://github.com/yourusername/nextjs-starter-kit.git my-awesome-project
+git clone https://github.com/berthje/nextjs-starter-kit.git my-awesome-project
 cd my-awesome-project
 
 # Start development (will ask for project name)
