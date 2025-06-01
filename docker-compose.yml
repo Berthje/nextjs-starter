@@ -5,9 +5,9 @@ services:
     container_name: nextjs-starter-db
     restart: unless-stopped
     environment:
-      POSTGRES_DB: my_app_db
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: your_password
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
@@ -26,15 +26,17 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - NODE_ENV=development
-      - DATABASE_URL=postgresql://postgres:your_password@postgres:5432/my_app_db
-      - DB_HOST=postgres
-      - DB_PORT=5432
-      - DB_NAME=my_app_db
-      - DB_USER=postgres
-      - DB_PASSWORD=your_password
-      - BETTER_AUTH_SECRET=your-secret-key-here-make-it-long-and-random
-      - BETTER_AUTH_URL=http://localhost:3000
+      - NODE_ENV=${NODE_ENV}
+      - DATABASE_URL=${DATABASE_URL}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
+      - BETTER_AUTH_URL=${BETTER_AUTH_URL}
+      - NEXT_PUBLIC_APP_NAME=${NEXT_PUBLIC_APP_NAME}
+      - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL}
     volumes:
       - .:/app
       - /app/node_modules
