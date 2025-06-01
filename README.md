@@ -1,15 +1,16 @@
 # 🚀 Next.js Production-Ready Starter Kit
 
-> **Zero-setup development environment with Docker** - Clone, run two commands, start coding!
+> **Zero-setup development environment with Docker** - Clone, customize, start coding!
 
-A modern, battle-tested Next.js starter kit that gets you from idea to production in minutes, not hours. Everything is containerized - no local dependencies required except Docker.
+A modern, battle-tested Next.js starter kit that gets you from idea to production in minutes, not hours. Everything is containerized with automatic project naming and secure credential generation.
 
 ---
 
 ## ✨ What Makes This Special?
 
 ### 🎯 **Instant Development Setup**
-- **Two command setup** - Setup environment + start coding
+- **One command setup** - Automatic environment creation
+- **Smart project naming** - Uses your folder name or custom input
 - **Zero local dependencies** - Only Docker required
 - **Complete isolation** - Each project in its own containers
 - **Hot reload** - See changes instantly while developing
@@ -27,6 +28,7 @@ A modern, battle-tested Next.js starter kit that gets you from idea to productio
 - **Production containers** with optimized builds
 - **Database included** - PostgreSQL containerized
 - **Environment isolation** - No conflicts between projects
+- **Project-specific naming** - Clean container organization
 
 ---
 
@@ -37,23 +39,46 @@ A modern, battle-tested Next.js starter kit that gets you from idea to productio
 - Git (for cloning)
 - That's it! No Node.js, PostgreSQL, or other tools needed locally
 
-### 🚀 Quick Installation (2 Commands)
+### 🚀 Quick Installation Options
 
+#### Option 1: Auto Setup (Recommended)
 ```bash
-# 1. Clone and navigate
-git clone https://github.com/yourusername/nextjs-starter-kit.git my-new-project
-cd my-new-project
+# Clone with your project name
+git clone https://github.com/yourusername/nextjs-starter-kit.git my-awesome-project
+cd my-awesome-project
 
-# 2. Setup environment (generates secure credentials)
+# Start development (auto-setups everything)
+npm run docker:dev
+```
+**Automatically uses "My Awesome Project" as your app name!**
+
+#### Option 2: Interactive Setup
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/nextjs-starter-kit.git my-project
+cd my-project
+
+# Interactive setup (choose your project name)
 npm run setup
 
-# 3. Start development
+# Start development
 npm run docker:dev
 ```
 
-### 📋 What the Setup Does
-The `npm run setup` command:
-- ✅ Creates `.env` file from `.env.example`
+#### Option 3: Default Setup
+```bash
+# Clone without renaming
+git clone https://github.com/yourusername/nextjs-starter-kit.git
+cd nextjs-starter-kit
+
+# Uses default "My Next.js App" name
+npm run docker:dev
+```
+
+### 📋 What the Setup Does Automatically
+- ✅ Creates `.env` file with secure random credentials
+- ✅ Sets project-specific database name (e.g., `my-awesome-project_db`)
+- ✅ Configures container names (e.g., `my-awesome-project-app`)
 - ✅ Generates random database password
 - ✅ Creates secure authentication secret
 - ✅ Sets development-ready defaults
@@ -70,16 +95,16 @@ After setup, your app will be available at:
 
 ### 🔧 Setup & Environment
 ```bash
-npm run setup           # Initial setup - creates .env with secure credentials
-npm run setup:env       # Regenerate .env file (overwrites existing)
+npm run setup               # Interactive setup - choose project name
+npm run setup:auto          # Auto setup using folder name
 ```
 
 ### 🐳 Docker Development
 ```bash
-npm run docker:dev              # Start dev environment (with logs)
+npm run docker:dev              # Start dev environment (with auto-setup)
 npm run docker:dev:detached     # Start dev environment in background
 npm run docker:dev:stop         # Stop development containers
-npm run docker:restart          # Restart just the Next.js app (keep DB running)
+npm run docker:restart          # Restart just the Next.js app
 ```
 
 ### 🚀 Docker Production
@@ -92,7 +117,6 @@ npm run docker:prod:stop        # Stop production containers
 ```bash
 npm run docker:logs             # View real-time logs from all containers
 npm run docker:clean            # Complete cleanup (removes containers, volumes, images)
-npm run help                    # Show available commands
 ```
 
 ### 📝 Traditional Development (Optional)
@@ -109,7 +133,7 @@ npm run lint:fix                # Fix ESLint issues
 ## 📁 Project Structure
 
 ```
-my-new-project/
+my-awesome-project/
 ├── 🐳 Docker Configuration
 │   ├── Dockerfile                    # Production container
 │   ├── Dockerfile.dev                # Development container
@@ -135,7 +159,8 @@ my-new-project/
 │
 ├── 🔧 Configuration & Scripts
 │   ├── scripts/
-│   │   └── setup-env.js              # Environment setup script
+│   │   ├── setup-env.js              # Interactive environment setup
+│   │   └── check-env.js              # Auto environment setup
 │   ├── .env.example                  # Environment template
 │   ├── .env                          # Your environment (auto-generated)
 │   ├── .gitignore                    # Git ignore rules
@@ -148,7 +173,51 @@ my-new-project/
 
 ---
 
-## 🔧 Customization Guide
+## 🎨 Project Customization
+
+### 📝 Project Naming Examples
+
+When you clone to different folder names, the setup automatically adapts:
+
+```bash
+# E-commerce project
+git clone [repo] my-ecommerce-store
+# Creates: "My Ecommerce Store" app, my-ecommerce-store_db
+
+# Portfolio site
+git clone [repo] john-doe-portfolio
+# Creates: "John Doe Portfolio" app, john-doe-portfolio_db
+
+# Corporate dashboard
+git clone [repo] company-dashboard
+# Creates: "Company Dashboard" app, company-dashboard_db
+```
+
+### 🔧 Manual Project Configuration
+
+If you want to customize the project name after setup:
+
+```bash
+# Edit your .env file
+nano .env
+
+# Update these values:
+PROJECT_NAME=my-custom-name
+NEXT_PUBLIC_APP_NAME="My Custom App Name"
+DB_NAME=my-custom-name_db
+
+# Update DATABASE_URL to match new DB_NAME
+DATABASE_URL="postgresql://postgres:your_password@postgres:5432/my-custom-name_db"
+
+# Restart containers
+npm run docker:dev:stop
+npm run docker:clean  # Clean old containers
+npm run docker:dev    # Start with new names
+```
+
+---
+
+## 🔧 Development Workflow
 
 ### 🎨 Adding New Features
 ```bash
@@ -164,17 +233,17 @@ my-new-project/
 ```bash
 # Method 1: Add to package.json and rebuild
 npm run docker:dev:stop
-# Edit package.json
+# Edit package.json to add dependencies
 npm run docker:dev
 
 # Method 2: Install inside running container
-docker exec -it nextjs-starter-app npm install package-name
+docker exec -it [project-name]-app npm install package-name
 npm run docker:restart
 ```
 
 ### 🗄️ Database Schema Changes
 ```bash
-# 1. Modify docker/init.sql
+# 1. Modify docker/init.sql for schema changes
 # 2. Restart with fresh database
 npm run docker:clean
 npm run docker:dev
@@ -182,21 +251,11 @@ npm run docker:dev
 
 ### 🔐 Environment Customization
 ```bash
-# Edit your environment
-nano .env  # or use your preferred editor
+# Edit your environment variables
+nano .env
 
 # Apply changes
 npm run docker:restart
-```
-
-### 🏗️ Project Renaming
-```bash
-# 1. Update package.json name field
-# 2. Update container names in docker-compose.yml
-# 3. Update NEXT_PUBLIC_APP_NAME in .env
-# 4. Restart containers
-npm run docker:dev:stop
-npm run docker:dev
 ```
 
 ---
@@ -207,22 +266,28 @@ npm run docker:dev
 
 #### Step 1: Create Production Environment
 ```bash
-# Copy environment template
-cp .env.example .env.prod
+# Copy your development environment
+cp .env .env.prod
 
-# Edit with production values
+# Edit production settings
 nano .env.prod
 ```
 
-#### Step 2: Update Production Settings
+#### Step 2: Production Environment Example
 ```bash
-# Example .env.prod
+# .env.prod
+PROJECT_NAME=my-awesome-project
 NODE_ENV=production
-DB_PASSWORD=your_super_secure_production_password
-BETTER_AUTH_SECRET=your_64_character_production_secret_key
-BETTER_AUTH_URL=https://yourdomain.com
-NEXT_PUBLIC_APP_URL=https://yourdomain.com
-DATABASE_URL=postgresql://postgres:your_password@postgres:5432/my_app_db
+DB_PASSWORD=super_secure_production_password_here
+BETTER_AUTH_SECRET=your_64_character_production_secret_key_here
+BETTER_AUTH_URL=https://myapp.com
+NEXT_PUBLIC_APP_NAME="My Awesome Project"
+NEXT_PUBLIC_APP_URL=https://myapp.com
+DATABASE_URL=postgresql://postgres:super_secure_password@postgres:5432/my-awesome-project_db
+DB_HOST=postgres
+DB_PORT=5432
+DB_NAME=my-awesome-project_db
+DB_USER=postgres
 ```
 
 #### Step 3: Deploy
@@ -236,7 +301,7 @@ npm run docker:prod
 ### 🌐 Platform Deployment
 Deploy to any Docker-compatible platform:
 
-- **Railway**: Push to Git, auto-deploys
+- **Railway**: Push to Git, auto-deploys with your project name
 - **DigitalOcean App Platform**: Connect repository
 - **AWS ECS**: Use provided Docker images
 - **Google Cloud Run**: Deploy containers
@@ -248,7 +313,7 @@ Deploy to any Docker-compatible platform:
 npm run build
 
 # Deploy built files to your platform
-# Make sure to set environment variables in platform settings
+# Set environment variables in platform dashboard
 ```
 
 ---
@@ -265,14 +330,17 @@ http://localhost:3000
 # Test page (shows environment status)
 http://localhost:3000/test
 
-# API health check (if you add one)
-http://localhost:3000/api/health
+# Check your project name appears correctly
+# Should show your custom app name in the title
 ```
 
 ### 🛠️ Database Connection Test
 ```bash
-# Connect to database directly
-docker exec -it nextjs-starter-db psql -U postgres -d my_app_db
+# Connect to your project-specific database
+docker exec -it [your-project-name]-db psql -U postgres -d [your-project-name]_db
+
+# Example for "my-awesome-project":
+docker exec -it my-awesome-project-db psql -U postgres -d my-awesome-project_db
 
 # Run a test query
 SELECT version();
@@ -283,14 +351,13 @@ SELECT version();
 
 ### 📊 Container Status Check
 ```bash
-# See running containers
+# See your project's containers
 docker ps
+# Should show: your-project-name-app, your-project-name-db
 
-# Check logs
-npm run docker:logs
-
-# View resource usage
-docker stats
+# Check logs for your specific project
+docker logs [your-project-name]-app
+docker logs [your-project-name]-db
 ```
 
 ---
@@ -302,7 +369,7 @@ docker stats
 #### Step 1: Stop and Remove Containers
 ```bash
 # Navigate to project directory
-cd my-new-project
+cd my-awesome-project
 
 # Complete cleanup (removes everything)
 npm run docker:clean
@@ -318,9 +385,9 @@ docker images
 cd ..
 
 # Remove project folder
-rm -rf my-new-project  # Linux/Mac
-rmdir /s my-new-project  # Windows Command Prompt
-Remove-Item -Recurse -Force my-new-project  # Windows PowerShell
+rm -rf my-awesome-project  # Linux/Mac
+rmdir /s my-awesome-project  # Windows Command Prompt
+Remove-Item -Recurse -Force my-awesome-project  # Windows PowerShell
 ```
 
 ### 🔧 Partial Cleanup Options
@@ -329,7 +396,7 @@ Remove-Item -Recurse -Force my-new-project  # Windows PowerShell
 # Remove only containers (keep images for faster restart)
 docker-compose down
 
-# Remove containers and volumes (keep images)
+# Remove containers and volumes (reset database)
 docker-compose down -v
 
 # Remove everything including images
@@ -356,33 +423,37 @@ docker --version
 docker ps
 
 # Solution: Start Docker Desktop
-# Windows: Start menu → Docker Desktop
-# Mac: Applications → Docker
+# Windows/Mac: Start menu → Docker Desktop
 # Linux: sudo systemctl start docker
 ```
 
 #### Port Conflicts
 ```bash
 # Error: Port 3000 or 5432 already in use
+
 # Solution 1: Stop conflicting services
 # Solution 2: Change ports in docker-compose.yml
 ports:
   - "3001:3000"  # Use port 3001 instead
 ```
 
-#### Build Failures
+#### Container Name Conflicts
 ```bash
-# Clear Docker cache and rebuild
-docker system prune -a
-npm run docker:dev
+# Error: Container name already exists
+
+# Solution: Clean existing containers
+npm run docker:clean
+
+# Or use different project name
+# Rename your project folder and restart
 ```
 
 ### 🔧 Application Issues
 
 #### Environment Variables Not Loading
 ```bash
-# Recreate .env file
-npm run setup:env
+# Recreate environment file
+npm run setup
 
 # Restart containers
 npm run docker:restart
@@ -390,11 +461,11 @@ npm run docker:restart
 
 #### Database Connection Errors
 ```bash
-# Check database is running
+# Check database container
 docker ps | grep postgres
 
 # View database logs
-docker logs nextjs-starter-db
+docker logs [your-project-name]-db
 
 # Reset database
 npm run docker:clean
@@ -415,24 +486,24 @@ npm run docker:dev
 
 #### View Detailed Logs
 ```bash
-# All container logs
+# All container logs for your project
 npm run docker:logs
 
 # Specific container logs
-docker logs nextjs-starter-app
-docker logs nextjs-starter-db
+docker logs [your-project-name]-app
+docker logs [your-project-name]-db
 ```
 
 #### Container Shell Access
 ```bash
 # Access app container
-docker exec -it nextjs-starter-app sh
+docker exec -it [your-project-name]-app sh
 
 # Access database container
-docker exec -it nextjs-starter-db bash
+docker exec -it [your-project-name]-db bash
 ```
 
-#### Reset Everything
+#### Complete Reset
 ```bash
 # Nuclear option - complete reset
 npm run docker:clean
@@ -450,14 +521,16 @@ npm run docker:dev
 - Hours spent configuring development environment
 - Version conflicts between projects
 - Complex database setup and management
-- Different environments for different developers
+- Manual credential management
+- Inconsistent project naming
 
 ### ✅ This Starter Kit Benefits
 - **Identical environment** for all developers
 - **5-minute setup** from zero to coding
 - **Complete project isolation** with Docker
+- **Smart project naming** from folder names
+- **Automatic credential generation**
 - **Production-ready** architecture from day one
-- **Secure defaults** with auto-generated credentials
 - **Easy cleanup** when project is done
 
 ### 🎯 Perfect For
@@ -466,6 +539,7 @@ npm run docker:dev
 - **Learning** Next.js without setup complexity
 - **Prototyping** with full-stack capabilities
 - **Production deployment** with Docker
+- **Multiple projects** with clean isolation
 
 ---
 
@@ -489,13 +563,15 @@ npm run docker:dev
 1. Create a feature branch: `git checkout -b feature-name`
 2. Make your changes
 3. Test thoroughly: `npm run docker:dev`
-4. Submit a pull request
+4. Update documentation if needed
+5. Submit a pull request
 
 ### 🐛 Reporting Issues
 - Use GitHub Issues
 - Include Docker and system information
 - Provide steps to reproduce
 - Include relevant logs
+- Mention your project name setup
 
 ---
 
@@ -520,8 +596,8 @@ npm run docker:dev
 
 ```bash
 # 🚀 Getting Started
-npm run setup               # Initial setup
-npm run docker:dev          # Start development
+npm run setup               # Interactive setup with project naming
+npm run docker:dev          # Start development (auto-setup)
 
 # 🔧 Development
 npm run docker:dev:stop     # Stop containers
@@ -534,6 +610,34 @@ npm run docker:prod:stop    # Stop production
 
 # 🧹 Cleanup
 npm run docker:clean        # Complete cleanup
+```
+
+---
+
+## 🌟 Project Examples
+
+### 📱 E-commerce Store
+```bash
+git clone [repo] shopify-clone
+cd shopify-clone
+npm run docker:dev
+# Creates: "Shopify Clone" app with shopify-clone_db
+```
+
+### 💼 Corporate Dashboard
+```bash
+git clone [repo] acme-dashboard
+cd acme-dashboard
+npm run docker:dev
+# Creates: "Acme Dashboard" app with acme-dashboard_db
+```
+
+### 🎨 Portfolio Website
+```bash
+git clone [repo] jane-portfolio
+cd jane-portfolio
+npm run docker:dev
+# Creates: "Jane Portfolio" app with jane-portfolio_db
 ```
 
 ---

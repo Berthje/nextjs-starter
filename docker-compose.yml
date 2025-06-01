@@ -2,7 +2,7 @@ services:
   # PostgreSQL Database
   postgres:
     image: postgres:17.5
-    container_name: nextjs-starter-db
+    container_name: ${PROJECT_NAME}-db
     restart: unless-stopped
     environment:
       POSTGRES_DB: ${DB_NAME}
@@ -21,7 +21,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.dev
-    container_name: nextjs-starter-app
+    container_name: ${PROJECT_NAME}-app
     restart: unless-stopped
     ports:
       - "3000:3000"
@@ -37,6 +37,7 @@ services:
       - BETTER_AUTH_URL=${BETTER_AUTH_URL}
       - NEXT_PUBLIC_APP_NAME=${NEXT_PUBLIC_APP_NAME}
       - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL}
+      - PROJECT_NAME=${PROJECT_NAME}
     volumes:
       - .:/app
       - /app/node_modules
