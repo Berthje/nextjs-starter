@@ -4,6 +4,7 @@ import { useState } from "react";
 
 export default function Home() {
   const [isDark, setIsDark] = useState(true);
+  const [copySuccess, setCopySuccess] = useState<string | null>(null);
 
   // Smooth scroll function
   const smoothScroll = (elementId: string) => {
@@ -17,9 +18,12 @@ export default function Home() {
   const copyToClipboard = async (text: string) => {
     try {
       await navigator.clipboard.writeText(text);
-      // You could add a toast notification here
+      setCopySuccess("Copied to clipboard!");
+      setTimeout(() => setCopySuccess(null), 3000);
     } catch (err) {
       console.error("Failed to copy text: ", err);
+      setCopySuccess("Failed to copy");
+      setTimeout(() => setCopySuccess(null), 3000);
     }
   };
 
@@ -27,6 +31,74 @@ export default function Home() {
     <div
       className={`min-h-screen transition-colors duration-300 ${isDark ? "dark bg-gray-900" : "bg-gray-50"}`}
     >
+      {/* Snackbar */}
+      {copySuccess && (
+        <div
+          className={`fixed bottom-8 right-12 z-50 px-6 py-3 rounded-lg shadow-lg transition-all duration-300 ${
+            copySuccess.includes("Failed")
+              ? isDark
+                ? "bg-red-600 text-white"
+                : "bg-red-500 text-white"
+              : isDark
+                ? "bg-green-600 text-white"
+                : "bg-green-500 text-white"
+          } animate-in slide-in-from-bottom-2`}
+        >
+          <div className="flex items-center justify-between space-x-4">
+            <div className="flex items-center space-x-2">
+              {copySuccess.includes("Failed") ? (
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              ) : (
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+              )}
+              <span className="font-medium">{copySuccess}</span>
+            </div>
+            <button
+              onClick={() => setCopySuccess(null)}
+              className="cursor-pointer ml-4 text-white/80 hover:text-white transition-colors"
+            >
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Background Effects - Only for Hero */}
       <div className="absolute inset-0 overflow-hidden h-screen">
         {/* Spotlight Effect */}
