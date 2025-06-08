@@ -51,12 +51,11 @@ async function checkAndSetupEnvironment() {
   let hasValidConfig = false;
 
   if (fs.existsSync(".env")) {
-    const envContent = fs.readFileSync(".env", "utf8");
-
-    // Check for placeholder values
+    const envContent = fs.readFileSync(".env", "utf8"); // Check for placeholder values that affect container setup
     const hasPlaceholders =
       envContent.includes("your_password") ||
-      envContent.includes("your-secret-key-here-make-it-long-and-random") ||
+      envContent.includes("my_app_db") ||
+      envContent.includes("PROJECT_NAME=my_app") ||
       envContent.includes("my-nextjs-app");
 
     if (hasPlaceholders) {
@@ -150,7 +149,6 @@ async function setupEnvironmentInteractive() {
     /NEXT_PUBLIC_APP_NAME=.*/,
     `NEXT_PUBLIC_APP_NAME="${displayProjectName}"`,
   );
-
   // Replace database configuration
   envContent = envContent.replace(/your_password/g, `dev_${randomPassword}`);
 
@@ -160,9 +158,9 @@ async function setupEnvironmentInteractive() {
   //   randomSecret
   // );
 
-  // Update DATABASE_URL with project-specific database name
+  // Update DATABASE_URL with project-specific database name - use regex to handle any password
   envContent = envContent.replace(
-    "postgresql://postgres:your_password@postgres:5432/my_app_db",
+    /postgresql:\/\/postgres:[^@]+@postgres:5432\/my_app_db/,
     `postgresql://postgres:dev_${randomPassword}@postgres:5432/${kebabProjectName}_db`,
   );
 

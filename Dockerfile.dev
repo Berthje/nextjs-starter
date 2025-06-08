@@ -2,10 +2,12 @@ FROM node:24-alpine3.21
 
 WORKDIR /app
 
+# Install build dependencies for native modules
+RUN apk add --no-cache python3 make g++
+
 # Install dependencies
 COPY package*.json ./
 RUN npm install
-RUN npm install --platform=linux --arch=x64
 
 # Copy source code
 COPY . .

@@ -169,11 +169,7 @@ STRIPE_WEBHOOK_SECRET="${stripeWebhookSecret}"`;
   envContent = envContent.replace(
     /NEXT_PUBLIC_APP_NAME=.*/,
     `NEXT_PUBLIC_APP_NAME="${displayProjectName}"`,
-  );
-  // Replace database configuration
-  envContent = envContent.replace(/your_password/g, `dev_${randomPassword}`);
-
-  // Replace Better Auth configuration
+  ); // Replace Better Auth configuration
   envContent = envContent.replace(
     /your-secret-key-here-make-it-long-and-random/g,
     betterAuthSecret,
@@ -184,11 +180,14 @@ STRIPE_WEBHOOK_SECRET="${stripeWebhookSecret}"`;
     `BETTER_AUTH_URL="${betterAuthUrl}"`,
   );
 
-  // Update DATABASE_URL
+  // Update DATABASE_URL - do this BEFORE replacing passwords
   envContent = envContent.replace(
     "postgresql://postgres:your_password@postgres:5432/my_app_db",
-    `postgresql://postgres:dev_${randomPassword}@postgres:5432/${kebabProjectName}_db`,
+    `postgresql://postgres:your_password@postgres:5432/${kebabProjectName}_db`,
   );
+
+  // Replace database configuration AFTER updating the database name
+  envContent = envContent.replace(/your_password/g, `dev_${randomPassword}`);
 
   // Update database name
   envContent = envContent.replace(

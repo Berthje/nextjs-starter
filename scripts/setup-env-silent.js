@@ -70,9 +70,7 @@ function setupEnvironmentSilent() {
     envContent = envContent.replace(
       /NEXT_PUBLIC_APP_NAME=.*/,
       `NEXT_PUBLIC_APP_NAME="${displayProjectName}"`,
-    );
-
-    // Replace database configuration
+    ); // Replace database configuration
     envContent = envContent.replace(/your_password/g, `dev_${randomPassword}`);
 
     // Leave Better Auth secret as placeholder (don't auto-generate)
@@ -81,9 +79,9 @@ function setupEnvironmentSilent() {
     //   randomSecret,
     // );
 
-    // Update DATABASE_URL
+    // Update DATABASE_URL - use regex to handle any password value
     envContent = envContent.replace(
-      "postgresql://postgres:your_password@postgres:5432/my_app_db",
+      /postgresql:\/\/postgres:[^@]+@postgres:5432\/my_app_db/,
       `postgresql://postgres:dev_${randomPassword}@postgres:5432/${kebabProjectName}_db`,
     );
 
